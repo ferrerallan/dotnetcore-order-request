@@ -1,12 +1,14 @@
 using OrderRequest.Domain.Products;
 using OrderRequest.Infra.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace OrderRequest.Endpoints.Categories;
  public class CategoryGetAll {
   public static string Template => "/categories";
   public static string[] Methods => new string[] { HttpMethod.Get.ToString() };
   public static Delegate Handle => Action;
-
+  
+  [Authorize(Policy = "Employee003Policy")]
   public static IResult Action(ApplicationDbContext context ){    
 
     var categories = context.Categories.ToList();

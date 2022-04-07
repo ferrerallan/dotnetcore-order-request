@@ -13,16 +13,14 @@ namespace OrderRequest.Endpoints.Categories;
     var category = context.Categories.Where(c=>c.Id==id).FirstOrDefault();
     if (category == null)
       return Results.NotFound("category not found");
-    category.Name = categoryRequest.Name;
-    category.Active = categoryRequest.Active;
+    category.EditInfo(categoryRequest.Name, categoryRequest.Active);
+
+    if (!category.IsValid)
+      return Results.ValidationProblem(category.Notifications.ConvertToProblemDetails());
 
     context.SaveChanges();
     
-    try {
-      return Results.Ok("updated");
-    }
-    catch (Exception exc){
-      return Results.Problem(exc.Message);
-    }
+    return Results.Ok("updated");
+    
   }
 }

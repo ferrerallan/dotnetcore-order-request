@@ -1,5 +1,8 @@
 using OrderRequest.Domain.Products;
 using OrderRequest.Infra.Data;
+using OrderRequest.Endpoints;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace OrderRequest.Endpoints.Categories;
  public class CategoryPost {
@@ -7,28 +10,23 @@ namespace OrderRequest.Endpoints.Categories;
   public static string[] Methods => new string[] { HttpMethod.Post.ToString() };
   public static Delegate Handle => Action;
 
-  public static IResult Action(CategoryRequest categoryRequest, ApplicationDbContext context ){
+  [Authorize]
+  public static IResult Action(CategoryRequest categoryRequest, HttpContext http, ApplicationDbContext context ) {
+    var userId = http.User.Claims.First(c=>c.Type == ClaimTypes.NameIdentifier).Value;
     var category = new Category(categoryRequest.Name,
                                 categoryRequest.Email,
-                                "Test",
-                                "testeedited");
-
+                                userId,
+                                userId);
+    
     if (!category.IsValid) {
-      var errors = category.Notifications
-                          .GroupBy(g=>g.Key)
-                          .ToDictionary(g=> g.Key, g=> g.Select(x => x.Message).ToArray());
+      var errors = category.Notifications.ConvertToProblemDetails();
       return Results.ValidationProblem(errors);
-    }
-      
+    }      
 
     context.Categories.Add(category);
     context.SaveChanges();
-    
-    try {
-      return Results.Created($"/categories/{category.Id}", category.Id);
-    }
-    catch (Exception exc){
-      return Results.Problem(exc.Message);
-    }
+
+    return Results.Created($"/categories/{category.Id}", category.Id);
+  
   }
 }

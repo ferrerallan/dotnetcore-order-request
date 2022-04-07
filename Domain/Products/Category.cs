@@ -6,14 +6,6 @@ public class Category : Entity
 {
   public Category(string name, string email, string createdBy, string editedBy)
   {
-    var contract = new Contract<Category>()
-      .IsNotNull(name,"Name")
-      .IsGreaterOrEqualsThan(name,3,"Name")
-      .IsEmail(email,"Email")
-      .IsNotNullOrEmpty(createdBy,"CreatedBy")
-      .IsNotNullOrEmpty(editedBy,"EditedBy");
-    AddNotifications(contract);
-
     Name=name;
     Email=email;
     Active=true;
@@ -21,10 +13,30 @@ public class Category : Entity
     CreatedBy=createdBy;
     CreatedOn=DateTime.Now;
     EditedOn=DateTime.Now;
+
+    Validate();
   }
 
-  public string Name { get; set; }
+  private void Validate(){
+    var contract = new Contract<Category>()
+      .IsNotNull(Name,"Name")
+      .IsGreaterOrEqualsThan(Name,3,"Name")
+      .IsEmail(Email,"Email")
+      .IsNotNullOrEmpty(CreatedBy,"CreatedBy")
+      .IsNotNullOrEmpty(EditedBy,"EditedBy");
+    AddNotifications(contract);
+  }
+
+  public string Name { get; private set; }
   public bool Active { get; set; }
   public string Email { get; set; }
+
+  public void EditInfo(string name, bool active) {
+    Active = active;
+    Name = name;
+
+    Validate();
+
+  }
 
 }
