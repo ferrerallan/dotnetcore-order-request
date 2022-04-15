@@ -36,10 +36,10 @@ builder.Services.AddIdentity<IdentityUser,IdentityRole>(options => {
 
 builder.Services.AddAuthorization(options =>
 {
-    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+    /*options.FallbackPolicy = new AuthorizationPolicyBuilder()
       .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
       .RequireAuthenticatedUser()
-      .Build();
+      .Build();*/
     options.AddPolicy("EmployeePolicy", p =>
         p.RequireAuthenticatedUser().RequireClaim("EmployeeCode"));
     options.AddPolicy("Employee003Policy", p =>

@@ -19,9 +19,7 @@ public class ApplicationDbContext:IdentityDbContext<IdentityUser>
   protected override void OnModelCreating(ModelBuilder builder) {
     base.OnModelCreating(builder);
 
-    builder.Ignore<Notification>();
-    builder.Entity<Product>()
-      .Property(p=>p.Name).HasMaxLength(255);
+    builder.Entity<DataLoad>().Property(x => x.HostedBy).HasColumnName("colHost");
     
   }
   protected override void ConfigureConventions(ModelConfigurationBuilder configuration){

@@ -3,12 +3,15 @@ using OrderRequest.Infra.Data;
 using OrderRequest.Endpoints;
 using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 namespace OrderRequest.Endpoints.Employees;
  public class EmployeePost {
   public static string Template => "/employees";
   public static string[] Methods => new string[] { HttpMethod.Post.ToString() };
-  public static Delegate Handle => Action;
+  public static Delegate Handle => Action;  
+  
+  [AllowAnonymous]  
   public static async Task<IResult> Action(EmployeeRequest employeeRequest, UserManager<IdentityUser> userManager ){
     var user = new IdentityUser {
       UserName = employeeRequest.Email,
